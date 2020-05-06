@@ -24,6 +24,11 @@ comments_col = redditdb["user.comments"]
 authors_col = redditdb["user.authors"]
 user_col = redditdb["user"]
 
+clone_user_submissions_col = redditdb["clone_user_submissions_col"]
+clone_user_comments_col = redditdb["clone_user_comments_col"]
+clone_user_authors_col = redditdb["clone_user_authors_col"]
+clone_user_col = redditdb["clone_user_col"]
+
 def correct_encoding(dictionary):
     """Correct the encoding of python dictionaries so they can be encoded to mongodb
     inputs
@@ -116,6 +121,7 @@ if __name__ == '__main__':
                 }
 
                 comments_col.update({'id': comment_obj['id']}, comment_obj, upsert=True)
+                clone_user_comments_col.update({'id': comment_obj['id']}, comment_obj, upsert=True)
 
             print('inserting comment done.')
 

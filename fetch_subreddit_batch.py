@@ -18,6 +18,10 @@ submissions_col = redditdb["coronavirus.submissions"]
 comments_col = redditdb["coronavirus.comments"]
 authors_col = redditdb["coronavirus.authors"]
 
+clone_submissions_col = redditdb["clone_submissions_col"]
+clone_comments_col = redditdb["clone_comments_col"]
+clone_user_authors_col = redditdb["user_authors_col"]
+
 
 # isinstance(thing, praw.models.Comment)
 # isinstance(thing, praw.models.Submission)
@@ -65,6 +69,7 @@ while True:
         }
 
         submissions_col.update({'id': submission_obj['id']}, submission_obj, upsert=True)
+        clone_submissions_col.update({'id': submission_obj['id']}, submission_obj, upsert=True)
 
 
         submission.comments.replace_more(limit=None)
@@ -92,6 +97,7 @@ while True:
 
 
                 authors_col.update({'id': author_obj['id']}, author_obj, upsert=True)
+                clone_user_authors_col.update({'id': author_obj['id']}, author_obj, upsert=True)
 
             parent_id_trimmed = comment.parent_id.split('_')[1]
             subreddit_id_trimmed = comment.subreddit_id.split('_')[1]
@@ -116,6 +122,7 @@ while True:
 
 
             comments_col.update({'id': comment_obj['id']}, comment_obj, upsert=True)
+            clone_comments_col.update({'id': comment_obj['id']}, comment_obj, upsert=True)
             # print('while ended')
 
     print('done.')
