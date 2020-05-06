@@ -1,5 +1,9 @@
 # Start zookeeper
 
+#start the mongodb server
+screen -S mongod -dm mongod --dbpath /usr/local/var/mongodb
+
+
 # start producer
 screen -S producer -dm python3.7 fetch_subreddit_batch.py
 

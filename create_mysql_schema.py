@@ -43,7 +43,9 @@ user_id VARCHAR(255),
 user_name VARCHAR(255),
 name VARCHAR(255),
 ups int(11),
-downs int(11))
+downs int(11),
+
+FOREIGN KEY(user_id) REFERENCES user(id))
 """)
 
 
@@ -57,9 +59,46 @@ subreddit_display_name VARCHAR(255),
 subreddit_name VARCHAR(255),
 subreddit_id VARCHAR(255),
 user_name VARCHAR(255),
-user_id VARCHAR(255))
+user_id VARCHAR(255),
+FOREIGN KEY(user_id) REFERENCES user(id))
 """)
 
+
+
+mycursor.execute("""CREATE TABLE coronavirus_submissions
+(id varchar(255) NOT NULL PRIMARY KEY,
+title VARCHAR(255),
+created int(11),
+selftext VARCHAR(255),
+is_video BOOLEAN,
+is_reddit_media_domain BOOLEAN,
+media VARCHAR(255),
+is_self BOOLEAN,
+name VARCHAR(255),
+ups int(11),
+downs int(11),
+url varchar(255),
+
+author_id varchar(255),
+FOREIGN KEY(author_id) REFERENCES user(id))
+""")
+
+mycursor.execute("""CREATE TABLE coronavirus_comments
+(id varchar(255) NOT NULL PRIMARY KEY, 
+created int(11), 
+subreddit_id VARCHAR(255), 
+is_root BOOLEAN,
+parent_id varchar(255),
+body VARCHAR(255), 
+ups int(11),
+downs int(11),
+score int(11),
+author_id VARCHAR(255),
+parent_id_trimmed varchar(255),
+subreddit_id_trimmed varchar(255),
+
+FOREIGN KEY(author_id) REFERENCES user(id))
+""")
 
 
 

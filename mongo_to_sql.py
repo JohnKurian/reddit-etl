@@ -38,15 +38,6 @@ while True:
                                           charset='utf8',
                                           auth_plugin='mysql_native_password')
 
-    # cursor = con.cursor()
-    # cursor.execute('drop table user;')
-    # con.commit()
-    # cursor.close()
-    #
-    # cursor = con.cursor()
-    # cursor.execute('drop table user_comments;')
-    # con.commit()
-    # cursor.close()
 
 
     print('starting sql dump loop...')
@@ -122,7 +113,7 @@ while True:
                     Insert twitter data
                     """
 
-                    if document['id'] is not "is_suspended":
+                    if document['subreddit_display_name'] and document['user_name'] and  document['user_id']:
                         cursor = con.cursor()
                         query = "INSERT INTO user_submissions (id, title, ups, downs, name, subreddit_display_name, subreddit_name, subreddit_id, user_name, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                         cursor.execute(query, (
@@ -150,11 +141,46 @@ while True:
                     """
 
                     if document['id'] is not "is_suspended":
+
+                        media = 'none'
+
+                        if document['media']:
+                            media = document['media']['type']
+                        else:
+                            media = ''
+
                         cursor = con.cursor()
-                        query = "INSERT INTO user_submissions (id, title, ups, downs, name, subreddit_display_name, subreddit_name, subreddit_id, user_name, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        query = "INSERT INTO coronavirus_submissions (id, title, created, selftext, is_video, is_reddit_media_domain, media, author_id, is_self, name, ups, downs, url) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,  %s, %s, %s)"
                         cursor.execute(query, (
-                            document['id'], document['title'], document['ups'], document['downs'],
-                            document['name'], document['subreddit_display_name'], document['subreddit_name'], document['subreddit_id'], document['user_name'], document['user_id']))
+                            document['id'], document['title'], document['created'], document['selftext'],
+                            document['is_video'], document['is_reddit_media_domain'], media, document['author_id'], document['is_self'], document['name'], document['ups'], document['downs'], document['url']))
+                        con.commit()
+                        cursor.close()
+
+
+            except Error as e:
+                print(e)
+
+
+
+    print('adding coronavirus comments..')
+    coronavirus_comments = redditdb['coronavirus.comments']
+    cursor = coronavirus_comments.find({})
+
+    for document in cursor:
+        if 'id' in document:
+            try:
+                if con.is_connected():
+                    """
+                    Insert twitter data
+                    """
+
+                    if document['id'] is not "is_suspended" and document['author']:
+                        cursor = con.cursor()
+                        query = "INSERT INTO coronavirus_comments (id, created, subreddit_id, is_root, parent_id, body, ups, downs, score, author_id, parent_id_trimmed, subreddit_id_trimmed) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,  %s, %s)"
+                        cursor.execute(query, (
+                            document['id'], document['created'], document['subreddit_id'], document['is_root'],
+                            document['parent_id'], document['body'], document['ups'], document['downs'], document['score'], document['author']['id'], document['parent_id_trimmed'], document['subreddit_id_trimmed']))
                         con.commit()
                         cursor.close()
 
@@ -164,4 +190,4 @@ while True:
     con.close()
     print('done.')
     print('sleeping..')
-    time.sleep(100)
+    time.sleep(1000)
